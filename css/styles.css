@@ -1,0 +1,29 @@
+body {
+  padding-top: 50px;
+}
+.container {
+  max-width: 1000px;
+}
+
+.jumbotron {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.center-block h3 {
+  text-align: center;
+}
+
+form {
+  text-align: center;
+}
+
+#guess-label {
+  font-size: 1.2em;
+}
+
+#guess-box {
+  width: 3em;
+  font-size: 1em;
+  text-align: center;
+}

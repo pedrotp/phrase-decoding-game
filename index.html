@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Phrase Decoding Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <link href="css/bootstrap-theme.min.css" rel="stylesheet" media="screen">
+  <link href="css/styles.css" rel="stylesheet" media="screen">
+  <script src="js/jquery-2.1.4.js" type="text/javascript"></script>
+  <script src="js/alert.js" type="text/javascript"></script>
+</head>
+<body>
+  <div class="container">
+    <header class="page-header">
+      <h1>Guess the secret code!</h1>
+    </header>
+    <div id="instructions">
+      <p>Below is a well-known movie quote, encoded with a simple <a href="https://en.wikipedia.org/wiki/Substitution_cipher">substitution cipher</a>. Symbols represent letters, and red slashes represent spaces. Click any symbol to enter a guess as to which letter that symbol represents. You only have <strong>5 guesses</strong>, so choose <em>wisely</em>.</p>
+    </div>
+    <div class="jumbotron" id="secret-div">
+    </div>
+    <div id="errors"></div>
+    <div class="center-block">
+      <h3>What does <span id="guess-icon" class="glyphicon glyphicon-asterisk"></span> stand for?</h3>
+    </div>
+    <div>
+      <form class="form-inline">
+        <div class="form-group">
+          <label for="guess-box" id="guess-label">My guess: </label>
+          <input type="text" class="form-control center-block" id="guess-box" name="guess-box" maxlength="1"/>
+        </div>
+          <button type="button" class="btn btn-default" onclick="guess()">Submit</button>      
+      </form>
+    </div>
+    <footer><hr/>&copy; 2015 Pedro Torres-Picón. Icons provided by <a href="http://glyphicons.com">glyphicons.com</a>.</footer>
+  </div>
+
+
+  <script type="text/javascript">
+
+    var guessCount = 5;
+
+    function generateAlphabet() {
+      var icons = ["search","scissors","education","sunglasses","piggy-bank","apple","king","queen",
+                    "tree-conifer","briefcase","eye-open","plane","gift","fire","picture",
+                    "facetime-video","tint","camera","headphones","trash","book","cog","home",
+                    "user","music","heart","cloud","star"]; 
+      var newAlpha = {};
+      for (var i = 0, alpha = "a"; i < 26; i++) {
+        var pos = Math.floor(Math.random() * (icons.length - 1));
+        newAlpha[alpha] = icons[pos];
+        icons.splice(pos,1);
+        alpha = String.fromCharCode(alpha.charCodeAt(0) + 1);
+      }
+      return newAlpha;
+    };
+
+    function encodePhrase(phrase,alphabet) {
+      var aZ = Object.keys(alphabet), letters = phrase.split("");
+      var result = letters.map(function(letter) {
+        if (/\w/.test(letter)) {
+          return alphabet[letter.toLowerCase()];
+        }
+        else if (letter == " ") {
+          return " / "
+        }
+        else {
+          return ""; //letter;
+        };
+      });
+      return result;  
+    };
+
+    function displaySecret(encodedPhrase) {
+      var secret = document.createElement("h2");
+      encodedPhrase.forEach(function(letter) {
+        var newSpan = document.createElement("span");
+        if (/\W/.test(letter[0])) {
+          newSpan.appendChild(document.createTextNode(letter));
+          newSpan.style.color = "red";
+          newSpan.style.fontSize = "1.5em";
+        }
+        else {
+          newSpan.setAttribute("class","glyphicon glyphicon-" + letter);
+          newSpan.setAttribute("onClick","changeIcon(\"" + letter + "\")");
+        };
+        secret.appendChild(newSpan);
+      });
+      document.getElementById("secret-div").appendChild(secret);
+      return secret;
+    }
+
+    var thisAlpha = generateAlphabet();
+    displaySecret(encodePhrase("Hello there, cowboy!", thisAlpha));
+
+    function changeIcon(code) {
+      var icon = document.getElementById("guess-icon");
+      icon.setAttribute("class","glyphicon glyphicon-" + code);
+    };
+
+    function wrongGuess() {
+      var alert = document.createElement("div");
+      alert.innerHTML = '<div class="alert alert-danger alert-dismissible fade in" role="alert" id="wrong-guess"> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Wrong guess!</strong> You have ' + guessCount + ' guesses left.</div>';
+      document.getElementById("errors").appendChild(alert);
+    };
+
+    function asteriskGuess() {
+      var alert = document.createElement("div");
+      alert.innerHTML = '<div class="alert alert-warning alert-dismissible fade in" role="alert" id="wrong-guess"> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Whoops!</strong> You must select an icon from above before you guess.</div>';
+      document.getElementById("errors").appendChild(alert);
+    };
+
+    function correctAlert() {
+      var alert = document.createElement("div");
+      alert.innerHTML = '<div class="alert alert-success alert-dismissible fade in" role="alert" id="wrong-guess"> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Well done!</strong> Keep guessing, you\'re almost there.</div>';
+      document.getElementById("errors").appendChild(alert);
+    };
+
+    function guess() {
+      var guess = document.getElementById("guess-box").value.toLowerCase();
+      var icon = document.getElementById("guess-icon").className.replace("glyphicon glyphicon-","");
+      if (icon == "asterisk") {
+        asteriskGuess();
+        document.getElementById("guess-box").value = "";
+      }
+      else if (thisAlpha[guess] == icon) {
+        correctAlert();
+        //WHAT HAPPENS IF THEY GUESS RIGHT
+      }
+      else {
+        wrongGuess();
+        guessCount--;
+        document.getElementById("guess-box").value = "";
+      }
+      console.log(guess+" "+icon);
+      if (guessCount == 0) return false; //WHAT ELSE HAPPENS IF THEY LOSE
+    };
+
+  </script>
+
+</body>
+</html>
+
+<!-- 
+
+-->
