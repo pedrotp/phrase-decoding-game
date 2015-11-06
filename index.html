@@ -8,7 +8,7 @@
   <link href="css/bootstrap-theme.min.css" rel="stylesheet" media="screen">
   <link href="css/styles.css" rel="stylesheet" media="screen">
   <script src="js/jquery-2.1.4.js" type="text/javascript"></script>
-  <script src="js/alert.js" type="text/javascript"></script>
+  <script src="js/bootstrap.js" type="text/javascript"></script>
 </head>
 <body>
   <div class="container">
@@ -18,20 +18,22 @@
     <div id="instructions">
       <p>Below is a well-known movie quote, encoded with a simple <a href="https://en.wikipedia.org/wiki/Substitution_cipher">substitution cipher</a>. Symbols represent letters, and red slashes represent spaces. Click any symbol to enter a guess as to which letter that symbol represents. You only have <strong>5 guesses</strong>, so choose <em>wisely</em>.</p>
     </div>
-    <div class="jumbotron" id="secret-div">
+    <div class="jumbotron center-text" id="secret-div">
     </div>
     <div id="errors"></div>
-    <div class="center-block">
-      <h3>What does <span id="guess-icon" class="glyphicon glyphicon-asterisk"></span> stand for?</h3>
-    </div>
-    <div>
-      <form class="form-inline">
-        <div class="form-group">
-          <label for="guess-box" id="guess-label">My guess: </label>
-          <input type="text" class="form-control center-block" id="guess-box" name="guess-box" maxlength="1"/>
-        </div>
-          <button type="button" class="btn btn-default" onclick="guess()">Submit</button>      
-      </form>
+    <div id="guess-container">
+      <div class="center-block">
+        <h3 class="center-text">What does <span id="guess-icon" class="glyphicon glyphicon-asterisk"></span> stand for?</h3>
+      </div>
+      <div>
+        <form class="form-inline center-text" onsubmit="return false">
+          <div class="form-group">
+            <label for="guess-box" id="guess-label">My guess: </label> 
+            <input type="text" class="form-control center-block center-text" id="guess-box" autocomplete="off" name="guess-box" maxlength="1" onkeydown="if (event.keyCode == 13) guess()"/>
+          </div>
+            <button type="button" class="btn btn-default" id="guess-button" onclick="guess()">Submit</button>      
+        </form>
+      </div>
     </div>
     <footer><hr/>&copy; 2015 Pedro Torres-Picón. Icons provided by <a href="http://glyphicons.com">glyphicons.com</a>.</footer>
   </div>
@@ -40,6 +42,8 @@
   <script type="text/javascript">
 
     var guessCount = 5;
+
+    document.getElementById("guess-box").focus();
 
     function generateAlphabet() {
       var icons = ["search","scissors","education","sunglasses","piggy-bank","apple","king","queen",
@@ -93,37 +97,56 @@
       return secret;
     }
 
-    var thisSecret = encodePhrase("Hello there, cowboy!", thisAlpha);
+    var thisSecret = encodePhrase("Hello", thisAlpha);
     document.getElementById("secret-div").appendChild(createSecret(thisSecret));
 
     function changeIcon(code) {
       var icon = document.getElementById("guess-icon");
       icon.setAttribute("class","glyphicon glyphicon-" + code);
+      document.getElementById("guess-box").focus();
     };
 
-    function wrongGuess() {
+    function wrongAlert() {
       var alert = document.createElement("div");
-      alert.innerHTML = '<div class="alert alert-danger alert-dismissible fade in" role="alert" id="wrong-guess"> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Wrong guess!</strong> You have ' + guessCount + ' guesses left.</div>';
+      if (document.getElementById("errors").childNodes.length > 2) document.getElementById("errors").removeChild(document.getElementById("errors").firstChild);
+      alert.innerHTML = '<div class="alert alert-danger alert-dismissible in flash" role="alert" id="wrong-guess"> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Wrong guess!</strong> You have ' + guessCount + ' guesses left.</div>';
       document.getElementById("errors").appendChild(alert);
+      window.setTimeout(function() {
+        $(".flash").fadeTo(500, 0).slideUp(500, function(){
+          $(this).remove();
+        });
+      }, 2500); 
     };
 
-    function asteriskGuess() {
+    function asteriskAlert() {
       var alert = document.createElement("div");
-      alert.innerHTML = '<div class="alert alert-warning alert-dismissible fade in" role="alert" id="wrong-guess"> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Whoops!</strong> You must select an icon from above before you guess.</div>';
+      if (document.getElementById("errors").childNodes.length > 2) document.getElementById("errors").removeChild(document.getElementById("errors").firstChild);
+      alert.innerHTML = '<div class="alert alert-warning alert-dismissible in flash" role="alert" id="wrong-guess"> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Whoops!</strong> You must select an icon from above before you guess.</div>';
       document.getElementById("errors").appendChild(alert);
+      window.setTimeout(function() {
+        $(".flash").fadeTo(500, 0).slideUp(500, function(){
+          $(this).remove();
+        });
+      }, 2500); 
     };
 
     function correctAlert() {
       var alert = document.createElement("div");
-      alert.innerHTML = '<div class="alert alert-success alert-dismissible fade in" role="alert" id="wrong-guess"> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Well done!</strong> Keep guessing, you\'re almost there.</div>';
+      if (document.getElementById("errors").childNodes.length > 2) document.getElementById("errors").removeChild(document.getElementById("errors").firstChild);
+      alert.innerHTML = '<div class="alert alert-success alert-dismissible in flash" role="alert" id="wrong-guess"> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Well done!</strong> Keep guessing, you\'re almost there.</div>';
       document.getElementById("errors").appendChild(alert);
+      window.setTimeout(function() {
+        $(".flash").fadeTo(500, 0).slideUp(500, function(){
+          $(this).remove();
+        });
+      }, 2500); 
     };
 
     function guess() {
       var guess = document.getElementById("guess-box").value.toLowerCase();
       var icon = document.getElementById("guess-icon").className.replace("glyphicon glyphicon-","");
       if (icon == "asterisk") {
-        asteriskGuess();
+        asteriskAlert();
         document.getElementById("guess-box").value = "";
       }
       else if (thisAlpha[guess] == icon) {
@@ -131,16 +154,25 @@
         thisSecret = decode(icon,guess);
         document.getElementById("secret-div").replaceChild(createSecret(thisSecret),document.getElementById("secret-h2"));
         document.getElementById("guess-box").value = "";
-        if (thisSecret.every(function(e) { e.length == 1 })) {
-          return true;  //WHAT HAPPENS IF THEY WIN
-        }
+        if (thisSecret.every(function(e) { return e.length == 1 || e === " / "})) {
+          var pic = document.createElement("img");
+          pic.src = "img/confetti_celebrate.gif";
+          while (document.getElementById("errors").hasChildNodes()) {
+            document.getElementById("errors").removeChild(document.getElementById("errors").lastChild);
+          };
+          var h3 = document.getElementById("errors").appendChild(document.createElement("h3"));
+          h3.appendChild(document.createTextNode("YOU WON!"));
+          document.getElementById("errors").appendChild(pic);
+          document.getElementById("guess-container").innerHTML = '<button class="btn btn-success btn-lg" type="submit">Play again?</button>';
+        };
       }
       else {
-        wrongGuess();
+        wrongAlert();
         guessCount--;
         document.getElementById("guess-box").value = "";
-        if (guessCount == 0) return false; //WHAT ELSE HAPPENS IF THEY LOSE
+        if (guessCount == 0) alert("You lost. Sad Face."); //WHAT ELSE HAPPENS IF THEY LOSE
       }
+      document.getElementById("guess-box").focus();
       return guess;
     };
 

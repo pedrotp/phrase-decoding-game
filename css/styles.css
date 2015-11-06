@@ -6,16 +6,7 @@ body {
 }
 
 .jumbotron {
-  text-align: center;
   margin-top: 20px;
-}
-
-.center-block h3 {
-  text-align: center;
-}
-
-form {
-  text-align: center;
 }
 
 #guess-label {
@@ -25,5 +16,26 @@ form {
 #guess-box {
   width: 3em;
   font-size: 1em;
+}
+
+.center-text {
   text-align: center;
+}
+
+#guesses-left {
+  padding-top: 10px;
+}
+
+img {
+  display: block;
+  margin: 0 auto;
+}
+
+h3 {
+  text-align: center;
+}
+
+.btn-lg {
+  display: block;
+  margin: 10px auto;
 }
