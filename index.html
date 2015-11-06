@@ -56,6 +56,8 @@
       return newAlpha;
     };
 
+    var thisAlpha = generateAlphabet();
+
     function encodePhrase(phrase,alphabet) {
       var aZ = Object.keys(alphabet), letters = phrase.split("");
       var result = letters.map(function(letter) {
@@ -72,11 +74,12 @@
       return result;  
     };
 
-    function displaySecret(encodedPhrase) {
+    function createSecret(encodedPhrase) {
       var secret = document.createElement("h2");
+      secret.id = "secret-h2";
       encodedPhrase.forEach(function(letter) {
         var newSpan = document.createElement("span");
-        if (/\W/.test(letter[0])) {
+        if (/\W/.test(letter[0]) || letter.length == 1) {
           newSpan.appendChild(document.createTextNode(letter));
           newSpan.style.color = "red";
           newSpan.style.fontSize = "1.5em";
@@ -87,12 +90,11 @@
         };
         secret.appendChild(newSpan);
       });
-      document.getElementById("secret-div").appendChild(secret);
       return secret;
     }
 
-    var thisAlpha = generateAlphabet();
-    displaySecret(encodePhrase("Hello there, cowboy!", thisAlpha));
+    var thisSecret = encodePhrase("Hello there, cowboy!", thisAlpha);
+    document.getElementById("secret-div").appendChild(createSecret(thisSecret));
 
     function changeIcon(code) {
       var icon = document.getElementById("guess-icon");
@@ -126,15 +128,32 @@
       }
       else if (thisAlpha[guess] == icon) {
         correctAlert();
-        //WHAT HAPPENS IF THEY GUESS RIGHT
+        thisSecret = decode(icon,guess);
+        document.getElementById("secret-div").replaceChild(createSecret(thisSecret),document.getElementById("secret-h2"));
+        document.getElementById("guess-box").value = "";
+        if (thisSecret.every(function(e) { e.length == 1 })) {
+          return true;  //WHAT HAPPENS IF THEY WIN
+        }
       }
       else {
         wrongGuess();
         guessCount--;
         document.getElementById("guess-box").value = "";
+        if (guessCount == 0) return false; //WHAT ELSE HAPPENS IF THEY LOSE
       }
-      console.log(guess+" "+icon);
-      if (guessCount == 0) return false; //WHAT ELSE HAPPENS IF THEY LOSE
+      return guess;
+    };
+
+    function decode(icon, letter) {
+      var newSecret = thisSecret.map( function(word, i, ary) { 
+        if (word == icon) {
+          return letter.toUpperCase(); 
+        }
+        else {
+          return word;
+        }
+      });
+      return newSecret;
     };
 
   </script>
