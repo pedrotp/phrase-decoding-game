@@ -8,7 +8,7 @@
   <link href="css/bootstrap-theme.min.css" rel="stylesheet" media="screen">
   <link href="css/styles.css" rel="stylesheet" media="screen">
   <script src="js/jquery-2.1.4.js" type="text/javascript"></script>
-  <script src="js/bootstrap.js" type="text/javascript"></script>
+  <script src="js/bootstrap.min.js" type="text/javascript"></script>
 </head>
 <body>
   <div class="container">
@@ -38,9 +38,7 @@
     <footer><hr/>&copy; 2015 Pedro Torres-Picón. Icons provided by <a href="http://glyphicons.com">glyphicons.com</a>.</footer>
   </div>
 
-
   <script type="text/javascript">
-
     var guessCount = 5;
 
     document.getElementById("guess-box").focus();
@@ -63,17 +61,17 @@
     var thisAlpha = generateAlphabet();
 
     function encodePhrase(phrase,alphabet) {
-      var aZ = Object.keys(alphabet), letters = phrase.split("");
-      var result = letters.map(function(letter) {
+      var aZ = Object.keys(alphabet), letters = phrase.split(""), result = [];
+      letters.forEach(function(letter, i) {
         if (/\w/.test(letter)) {
-          return alphabet[letter.toLowerCase()];
+          result.push(alphabet[letter.toLowerCase()]);
         }
         else if (letter == " ") {
-          return " / "
+          result.push(" / ");
         }
         else {
-          return ""; //letter;
-        };
+          result.push(letter);
+        }
       });
       return result;  
     };
@@ -82,22 +80,24 @@
       var secret = document.createElement("h2");
       secret.id = "secret-h2";
       encodedPhrase.forEach(function(letter) {
-        var newSpan = document.createElement("span");
-        if (/\W/.test(letter[0]) || letter.length == 1) {
-          newSpan.appendChild(document.createTextNode(letter));
-          newSpan.style.color = "red";
-          newSpan.style.fontSize = "1.5em";
+        if (letter != "") {
+          var newSpan = document.createElement("span");      
+          if (/\W/.test(letter[0]) || letter.length == 1) {
+            newSpan.appendChild(document.createTextNode(letter));
+            newSpan.style.color = "red";
+            newSpan.style.fontSize = "1.5em";
+          }
+          else {
+            newSpan.setAttribute("class","glyphicon glyphicon-" + letter);
+            newSpan.setAttribute("onClick","changeIcon(\"" + letter + "\")");
+          };
+          secret.appendChild(newSpan);
         }
-        else {
-          newSpan.setAttribute("class","glyphicon glyphicon-" + letter);
-          newSpan.setAttribute("onClick","changeIcon(\"" + letter + "\")");
-        };
-        secret.appendChild(newSpan);
       });
       return secret;
-    }
+    };
 
-    var thisSecret = encodePhrase("Hello", thisAlpha);
+    var thisSecret = encodePhrase(getPhrase(), thisAlpha);
     document.getElementById("secret-div").appendChild(createSecret(thisSecret));
 
     function changeIcon(code) {
@@ -154,7 +154,8 @@
         thisSecret = decode(icon,guess);
         document.getElementById("secret-div").replaceChild(createSecret(thisSecret),document.getElementById("secret-h2"));
         document.getElementById("guess-box").value = "";
-        if (thisSecret.every(function(e) { return e.length == 1 || e === " / "})) {
+        console.log(thisSecret);
+        if (thisSecret.every(function(e) { return e.length == 1 || e == " / " })) {
           var pic = document.createElement("img");
           pic.src = "img/confetti_celebrate.gif";
           while (document.getElementById("errors").hasChildNodes()) {
@@ -163,17 +164,26 @@
           var h3 = document.getElementById("errors").appendChild(document.createElement("h3"));
           h3.appendChild(document.createTextNode("YOU WON!"));
           document.getElementById("errors").appendChild(pic);
-          document.getElementById("guess-container").innerHTML = '<button class="btn btn-success btn-lg" type="submit">Play again?</button>';
-        };
+          document.getElementById("guess-container").innerHTML = '<button class="btn btn-success btn-lg" type="submit" onclick="document.location.reload(true)">Play again?</button>';
+        }
       }
       else {
         wrongAlert();
         guessCount--;
         document.getElementById("guess-box").value = "";
-        if (guessCount == 0) alert("You lost. Sad Face."); //WHAT ELSE HAPPENS IF THEY LOSE
+        if (guessCount == 0) {
+          var pic = document.createElement("img");
+          pic.src = "img/loser.gif";
+          while (document.getElementById("errors").hasChildNodes()) {
+            document.getElementById("errors").removeChild(document.getElementById("errors").lastChild);
+          };
+          var h3 = document.getElementById("errors").appendChild(document.createElement("h3"));
+          h3.appendChild(document.createTextNode("You're out of guesses!"));
+          document.getElementById("errors").appendChild(pic);
+          document.getElementById("guess-container").innerHTML = '<button class="btn btn-success btn-lg" type="submit" onclick="document.location.reload(true)">Play again?</button>';
+        }
       }
       document.getElementById("guess-box").focus();
-      return guess;
     };
 
     function decode(icon, letter) {
@@ -188,11 +198,13 @@
       return newSecret;
     };
 
+    function getPhrase() {
+      var phraseBook = ["Bond. James Bond.","Houston, we have a problem.","I'll be back.","I've got a feeling we're not in Kansas anymore.","E.T. phone home.","There's no place like home.","It's alive! It's alive!","Wax on, wax off.","I feel the need... the need for speed.","I see dead people.","You can't handle the truth!","May the force be with you.","Go ahead. Make my day.","They may take our lives, but they will never take... our FREEDOM!","Are you talkin' to me?"];
+      return phraseBook[Math.floor(Math.random() * (phraseBook.length - 1))];
+    };
+    
+
   </script>
 
 </body>
 </html>
-
-<!-- 
-
--->
