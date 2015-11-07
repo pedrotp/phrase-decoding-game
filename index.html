@@ -39,9 +39,15 @@
   </div>
 
   <script type="text/javascript">
+  
     var guessCount = 5;
-
     document.getElementById("guess-box").focus();
+
+    function getPhrase() {
+      var phraseBook = ["Bond. James Bond.","Houston, we have a problem.","I'll be back.","I've got a feeling we're not in Kansas anymore.","E.T. phone home.","There's no place like home.","It's alive! It's alive!","Wax on, wax off.","I feel the need... the need for speed.","I see dead people.","You can't handle the truth!","May the force be with you.","Go ahead. Make my day.","They may take our lives, but they will never take... our FREEDOM!","Are you talkin' to me?"];
+      return phraseBook[Math.floor(Math.random() * (phraseBook.length - 1))];
+    };
+    
 
     function generateAlphabet() {
       var icons = ["search","scissors","education","sunglasses","piggy-bank","apple","king","queen",
@@ -197,12 +203,6 @@
       });
       return newSecret;
     };
-
-    function getPhrase() {
-      var phraseBook = ["Bond. James Bond.","Houston, we have a problem.","I'll be back.","I've got a feeling we're not in Kansas anymore.","E.T. phone home.","There's no place like home.","It's alive! It's alive!","Wax on, wax off.","I feel the need... the need for speed.","I see dead people.","You can't handle the truth!","May the force be with you.","Go ahead. Make my day.","They may take our lives, but they will never take... our FREEDOM!","Are you talkin' to me?"];
-      return phraseBook[Math.floor(Math.random() * (phraseBook.length - 1))];
-    };
-    
 
   </script>
 
