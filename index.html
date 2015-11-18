@@ -31,16 +31,47 @@
             <label for="guess-box" id="guess-label">My guess: </label> 
             <input type="text" class="form-control center-block center-text" id="guess-box" autocomplete="off" name="guess-box" maxlength="1" onkeydown="if (event.keyCode == 13) guess()"/>
           </div>
-            <button type="button" class="btn btn-default" id="guess-button" onclick="guess()">Submit</button>      
+            <button type="button" class="btn btn-default" id="guess-button" onclick="guess()">Submit</button>
         </form>
       </div>
     </div>
+    <div id="secondary-buttons">
+      <hr/>
+      <div>
+        <button class="btn btn-success center-block" data-toggle="modal" data-target="#myModal" id="top-button">Guess Whole Quote</button>
+        <button id="bottom-button" class="btn btn-default center-block">Get New Quote</button>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="myModalLabel">Did you figure out the quote?</h4>
+          </div>
+          <div class="modal-body">
+            <form onsubmit="return false">
+              <div class="form-group">
+                <label for="guess-all-box">Enter your guess below. Don't worry about capitalization, but punctuation matters.</label>
+                <input type="text" class="form-control" id="guess-all-box" name="guess-all-box" onkeydown="if (event.keyCode == 13) guessAll()" autocomplete="off" placeholder="Your guess here."/>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" id="guess-all-button">Submit Guess!</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <footer><hr/>&copy; 2015 Pedro Torres-Picón. Icons provided by <a href="http://glyphicons.com">glyphicons.com</a>.</footer>
   </div>
 
   <script type="text/javascript">
   
-    var guessCount = 5;
+    var guessCount, thisPhrase, thisSecret;
     document.getElementById("guess-box").focus();
 
     function getPhrase() {
@@ -103,8 +134,20 @@
       return secret;
     };
 
-    var thisSecret = encodePhrase(getPhrase(), thisAlpha);
-    document.getElementById("secret-div").appendChild(createSecret(thisSecret));
+    function newPhrase() {
+      guessCount = 5;
+      thisPhrase = getPhrase();
+      thisSecret = encodePhrase(thisPhrase, thisAlpha);
+      document.getElementById("secret-div").innerHTML = "";
+      document.getElementById("secret-div").appendChild(createSecret(thisSecret));
+      document.getElementById("guess-all-box").value = "";
+      document.getElementById("guess-box").focus();
+      console.log(thisPhrase);
+    };
+
+    newPhrase();
+
+    document.getElementById("bottom-button").addEventListener("click", newPhrase);
 
     function changeIcon(code) {
       var icon = document.getElementById("guess-icon");
@@ -148,6 +191,32 @@
       }, 2500); 
     };
 
+    function win() {
+      var pic = document.createElement("img");
+      pic.src = "img/confetti_celebrate.gif";
+      while (document.getElementById("errors").hasChildNodes()) {
+        document.getElementById("errors").removeChild(document.getElementById("errors").lastChild);
+      };
+      document.getElementById("secondary-buttons").innerHTML = "";
+      var h3 = document.getElementById("errors").appendChild(document.createElement("h3"));
+      h3.appendChild(document.createTextNode("YOU WON!"));
+      document.getElementById("errors").appendChild(pic);
+      document.getElementById("guess-container").innerHTML = '<button class="btn btn-success btn-lg" type="submit" onclick="document.location.reload(true)">Play again?</button>';
+    };
+
+    function lose() {
+      var pic = document.createElement("img");
+      pic.src = "img/loser.gif";
+      while (document.getElementById("errors").hasChildNodes()) {
+        document.getElementById("errors").removeChild(document.getElementById("errors").lastChild);
+      };
+      document.getElementById("secondary-buttons").innerHTML = "";
+      var h3 = document.getElementById("errors").appendChild(document.createElement("h3"));
+      h3.appendChild(document.createTextNode("Whoops, you lost!"));
+      document.getElementById("errors").appendChild(pic);
+      document.getElementById("guess-container").innerHTML = '<button class="btn btn-success btn-lg" type="submit" onclick="document.location.reload(true)">Play again?</button>';
+    };
+
     function guess() {
       var guess = document.getElementById("guess-box").value.toLowerCase();
       var icon = document.getElementById("guess-icon").className.replace("glyphicon glyphicon-","");
@@ -161,33 +230,13 @@
         document.getElementById("secret-div").replaceChild(createSecret(thisSecret),document.getElementById("secret-h2"));
         document.getElementById("guess-box").value = "";
         console.log(thisSecret);
-        if (thisSecret.every(function(e) { return e.length == 1 || e == " / " })) {
-          var pic = document.createElement("img");
-          pic.src = "img/confetti_celebrate.gif";
-          while (document.getElementById("errors").hasChildNodes()) {
-            document.getElementById("errors").removeChild(document.getElementById("errors").lastChild);
-          };
-          var h3 = document.getElementById("errors").appendChild(document.createElement("h3"));
-          h3.appendChild(document.createTextNode("YOU WON!"));
-          document.getElementById("errors").appendChild(pic);
-          document.getElementById("guess-container").innerHTML = '<button class="btn btn-success btn-lg" type="submit" onclick="document.location.reload(true)">Play again?</button>';
-        }
+        if (thisSecret.every(function(e) { return e.length == 1 || e == " / " })) win();
       }
       else {
         wrongAlert();
         guessCount--;
         document.getElementById("guess-box").value = "";
-        if (guessCount == 0) {
-          var pic = document.createElement("img");
-          pic.src = "img/loser.gif";
-          while (document.getElementById("errors").hasChildNodes()) {
-            document.getElementById("errors").removeChild(document.getElementById("errors").lastChild);
-          };
-          var h3 = document.getElementById("errors").appendChild(document.createElement("h3"));
-          h3.appendChild(document.createTextNode("You're out of guesses!"));
-          document.getElementById("errors").appendChild(pic);
-          document.getElementById("guess-container").innerHTML = '<button class="btn btn-success btn-lg" type="submit" onclick="document.location.reload(true)">Play again?</button>';
-        }
+        if (guessCount == 0) lose();
       }
       document.getElementById("guess-box").focus();
     };
@@ -203,6 +252,24 @@
       });
       return newSecret;
     };
+
+    function guessAll() {
+      var guess = document.getElementById("guess-all-box").value.toLowerCase();
+      if (guess === thisPhrase.toLowerCase()) {
+        $('#myModal').modal('hide');
+        win();
+      }
+      else {
+        $('#myModal').modal('hide');
+        lose();
+      }
+    };
+
+    $('#guess-all-button').on('click', guessAll);
+
+    $('#myModal').on('shown.bs.modal', function () {
+      $('#guess-all-box').focus();
+    });
 
   </script>
 

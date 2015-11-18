@@ -39,3 +39,23 @@ h3 {
   display: block;
   margin: 10px auto;
 }
+
+@media (min-width: 992px) {
+  #center-box {
+    border-style: none solid;
+    border-width: thin;
+    border-color: LightGray;
+  }
+}
+
+@media (max-width: 992px) {
+  #center-box {
+    border-style: solid none;
+    border-width: thin;
+    border-color: #eee;
+  }
+}
+
+#bottom-button {
+  margin-top: 10px;
+}
