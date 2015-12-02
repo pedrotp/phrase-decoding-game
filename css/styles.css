@@ -59,3 +59,13 @@ h3 {
 #bottom-button {
   margin-top: 10px;
 }
+
+#hint-box {
+  padding-top: 20px;
+
+}
+
+#hint-box button {
+  margin: 0;
+  font-size: 1.5em;
+}

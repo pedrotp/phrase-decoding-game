@@ -25,9 +25,14 @@
       <h1>Guess the secret code!</h1>
     </header>
     <div id="instructions">
-      <p>Below is a well-known movie quote, encoded with a simple <a href="https://en.wikipedia.org/wiki/Substitution_cipher">substitution cipher</a>. Symbols represent letters, and red slashes represent spaces. Click any symbol to enter a guess as to which letter that symbol represents. You only have <strong>5 guesses</strong>, so choose <em>wisely</em>.</p>
+      <p>Below is a well-known movie quote, encoded with a simple <a href="https://en.wikipedia.org/wiki/Substitution_cipher" target="_blank">substitution cipher</a>. Symbols represent letters, and red slashes represent spaces. Click any symbol to enter a guess as to which letter that symbol represents. You only have <strong>5 guesses</strong>, so choose <em>wisely</em>.</p>
     </div>
-    <div class="jumbotron center-text" id="secret-div">
+    <div class="jumbotron center-text">
+      <div id="secret-div">
+      </div>
+      <div id="hint-box">
+        <button type="button" class="btn btn-link" id="hint-link">(Get a Hint)</button>
+      </div>
     </div>
     <div id="errors"></div>
     <div id="guess-container">
@@ -80,12 +85,15 @@
 
   <script type="text/javascript">
   
-    var guessCount, thisPhrase, thisSecret;
+    var guessCount, thisPhrase, thisSecret, thisHint;
     document.getElementById("guess-box").focus();
 
     function getPhrase() {
-      var phraseBook = ["Bond. James Bond.","Houston, we have a problem","I'll be back","We're not in Kansas anymore","E.T. phone home","There's no place like home","It's alive! It's alive!","Wax on, wax off","I feel the need... the need for speed","I see dead people","You can't handle the truth!","May the force be with you","Go ahead. Make my day.","They may take our lives, but they will never take... our FREEDOM!","Are you talkin' to me?"];
-      return phraseBook[Math.floor(Math.random() * (phraseBook.length - 1))];
+      var phraseBook = ["Bond. James Bond.","Houston, we have a problem","I'll be back","We're not in Kansas anymore","E.T. phone home","There's no place like home","It's alive! It's alive!","Wax on, wax off","Say hello to my little friend!","I see dead people","You can't handle the truth!","May the force be with you","Go ahead. Make my day.","Are you not entertained?","Are you talkin' to me?", "I love the smell of napalm in the morning.", "They may take our lives, but they'll never take our freedom!", "Why so serious?"];
+      var num = Math.floor(Math.random() * (phraseBook.length - 1));
+      thisHint = "img/hint_" + num + ".jpg";
+      console.log(thisHint);
+      return phraseBook[num];
     };
     
 
@@ -162,6 +170,24 @@
       var icon = document.getElementById("guess-icon");
       icon.setAttribute("class","glyphicon glyphicon-" + code);
       document.getElementById("guess-box").focus();
+    };
+
+
+    document.getElementById("hint-link").addEventListener("click", hint);
+
+    function hint() {
+      var alert = document.createElement("div");
+      alert.className = "flash";
+      if (document.getElementById("errors").childNodes.length > 2) document.getElementById("errors").removeChild(document.getElementById("errors").firstChild);
+      var pic = document.createElement("img");
+      pic.src = thisHint;
+      alert.appendChild(pic);
+      document.getElementById("errors").appendChild(alert);
+      window.setTimeout(function() {
+        $(".flash").fadeTo(500, 0).slideUp(500, function(){
+          $(this).remove();
+        });
+      }, 2000); 
     };
 
     function wrongAlert() {
