@@ -69,3 +69,7 @@ h3 {
   margin: 0;
   font-size: 1.5em;
 }
+
+.flash img {
+  max-height: 300px;
+}
